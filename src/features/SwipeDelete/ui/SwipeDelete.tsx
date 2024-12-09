@@ -1,10 +1,10 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useRootStore } from '../../../shared/stores';
+import { useAppDispatch } from '../../../shared/hooks';
+import { deleteSavedLocation } from '../../../shared/stores/locationSlice';
 
-export const SwipeDelete = observer(
+export const SwipeDelete = React.memo(
   ({ children, id }: { children: React.ReactNode; id: string }) => {
-    const { coreStore } = useRootStore();
+    const dispatch = useAppDispatch();
     const [left, setLeft] = React.useState(0);
     const isSwiping = React.useRef(false);
     const startX = React.useRef<number | null>(null);
@@ -23,7 +23,7 @@ export const SwipeDelete = observer(
 
       if (swipePercentage > 30) {
         diffX.current = offsetWidth.current + 100;
-        coreStore.deleteSavedLocation(id);
+        dispatch(deleteSavedLocation(id));
       } else {
         diffX.current = 0;
       }

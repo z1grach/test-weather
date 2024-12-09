@@ -1,8 +1,11 @@
-import { observer } from 'mobx-react-lite';
 import CloseIcon from '@mui/icons-material/Close';
-import { ISavedLocation } from '../../../shared/stores/CoreStore';
-import { useRootStore } from '../../../shared/stores';
+import React from 'react';
+import {
+  deleteSavedLocation,
+  ISavedLocation,
+} from '../../../shared/stores/locationSlice';
 import { ICurrentWeather } from '../../../entities/Weather/types';
+import { useAppDispatch } from '../../../shared/hooks';
 
 interface WeatherCardProps {
   location: ISavedLocation;
@@ -10,12 +13,12 @@ interface WeatherCardProps {
   isPending: boolean;
 }
 
-export const WeatherCard = observer(
+export const WeatherCard = React.memo(
   ({ location, data, isPending }: WeatherCardProps) => {
-    const { coreStore } = useRootStore();
+    const dispatch = useAppDispatch();
 
     const handleDelete = () => {
-      coreStore.deleteSavedLocation(location.id);
+      dispatch(deleteSavedLocation(location.id));
     };
 
     return (

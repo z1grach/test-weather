@@ -1,5 +1,5 @@
-import { observer } from 'mobx-react-lite';
-import { ISavedLocation } from '../../../shared/stores/CoreStore';
+import React from 'react';
+import { ISavedLocation } from '../../../shared/stores/locationSlice';
 import { ICurrentWeather } from '../../../entities/Weather/types';
 import { SwipeDelete } from '../../../features/SwipeDelete';
 
@@ -9,7 +9,7 @@ interface WeatherMobileCardProps {
   isPending: boolean;
 }
 
-export const WeatherMobileCard = observer(
+export const WeatherMobileCard = React.memo(
   ({ location, data, isPending }: WeatherMobileCardProps) => {
     return (
       <div className="relative h-[100px] w-full">

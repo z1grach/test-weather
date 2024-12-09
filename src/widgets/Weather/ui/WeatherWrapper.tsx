@@ -1,27 +1,31 @@
-import { observer } from 'mobx-react-lite';
-import { ISavedLocation } from '../../../shared/stores/CoreStore';
-import { useRootStore } from '../../../shared/stores';
+import React from 'react';
 import { useCurrentWeather } from '../../../entities/Weather/hooks';
 import { WeatherCard } from './WeatherCard';
 import { WeatherMobileCard } from './WeatherMobileCard';
+import { useAppSelector } from '../../../shared/hooks';
+import { ISavedLocation } from '../../../shared/stores/locationSlice';
 
 interface WeatherWrapperProps {
   location: ISavedLocation;
 }
 
-export const WeatherWrapper = observer(({ location }: WeatherWrapperProps) => {
-  const { coreStore } = useRootStore();
-  const { data, isPending } = useCurrentWeather(location.name);
+export const WeatherWrapper = React.memo(
+  ({ location }: WeatherWrapperProps) => {
+    const { isMobile } = useAppSelector((state) => state.mobile);
+    const { data, isPending } = useCurrentWeather(location.name);
 
-  if (coreStore.isMobile) {
+    if (isMobile) {
+      return (
+        <WeatherMobileCard
+          location={location}
+          data={data}
+          isPending={isPending}
+        />
+      );
+    }
+
     return (
-      <WeatherMobileCard
-        location={location}
-        data={data}
-        isPending={isPending}
-      />
+      <WeatherCard location={location} data={data} isPending={isPending} />
     );
-  }
-
-  return <WeatherCard location={location} data={data} isPending={isPending} />;
-});
+  },
+);

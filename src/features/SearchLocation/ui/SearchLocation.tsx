@@ -1,11 +1,14 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import SearchIcon from '@mui/icons-material/Search';
 import { ILocation, LocationService } from '../../../entities/Locations';
-import { useRootStore } from '../../../shared/stores';
+import { useAppDispatch, useAppSelector } from '../../../shared/hooks';
+import { setCacheSearch } from '../../../shared/stores/cacheSlice';
+import { addSavedLocation } from '../../../shared/stores/locationSlice';
 
-export const SearchLocation = observer(() => {
-  const { coreStore } = useRootStore();
+export const SearchLocation = React.memo(() => {
+  const { cacheSearch, hashSearch } = useAppSelector((state) => state.cache);
+  const { isMobile } = useAppSelector((state) => state.mobile);
+  const dispatch = useAppDispatch();
   const [showInput, setShowInput] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const ref = React.useRef<HTMLDivElement>(null);
@@ -67,14 +70,8 @@ export const SearchLocation = observer(() => {
         return;
       }
 
-      if (
-        coreStore.cacheSearch[value] &&
-        coreStore.hashSearch[coreStore.cacheSearch[value]]
-      ) {
-        setLocations(
-          (coreStore.hashSearch[coreStore.cacheSearch[value]] as ILocation[]) ||
-            [],
-        );
+      if (cacheSearch[value] && hashSearch[cacheSearch[value]]) {
+        setLocations((hashSearch[cacheSearch[value]] as ILocation[]) || []);
 
         return;
       }
@@ -83,7 +80,7 @@ export const SearchLocation = observer(() => {
         .fetch()
         .then(({ data }) => {
           if (data) {
-            coreStore.setCacheSearch(value, data);
+            dispatch(setCacheSearch({ str: value, data }));
             setLocations(data);
           } else {
             setLocations([]);
@@ -97,7 +94,7 @@ export const SearchLocation = observer(() => {
   };
 
   const handleSaveLocation = (id: string, name: string, country: string) => {
-    coreStore.addSavedLocation({ id, name, country });
+    dispatch(addSavedLocation({ id, name, country }));
 
     onClose();
   };
@@ -105,7 +102,7 @@ export const SearchLocation = observer(() => {
   return (
     <>
       <div className="relative z-20 w-full max-w-[540px]">
-        {coreStore.isMobile ? (
+        {isMobile ? (
           <div
             className="flex h-[40px] w-full flex-nowrap rounded bg-[#f2f2f2]"
             ref={ref}

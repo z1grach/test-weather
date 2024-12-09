@@ -1,19 +1,20 @@
-import { observer } from 'mobx-react-lite';
-import { useRootStore } from '../../../shared/stores';
+import React from 'react';
 import { WeatherWrapper } from './WeatherWrapper';
+import { useAppSelector } from '../../../shared/hooks';
 
-export const Weather = observer(() => {
-  const { coreStore } = useRootStore();
+export const Weather = React.memo(() => {
+  const { isMobile } = useAppSelector((state) => state.mobile);
+  const { savedLocations } = useAppSelector((state) => state.location);
 
   return (
     <div
       className={
-        coreStore.isMobile
+        isMobile
           ? 'flex flex-col gap-2 overflow-x-hidden p-5'
           : 'flex flex-wrap gap-5 p-5'
       }
     >
-      {coreStore.savedLocations.map((item) => (
+      {savedLocations.map((item) => (
         <WeatherWrapper key={item.id} location={item} />
       ))}
     </div>

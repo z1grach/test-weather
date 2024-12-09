@@ -1,14 +1,16 @@
-import React from 'react';
-import { CoreStore } from './CoreStore';
+import { configureStore } from '@reduxjs/toolkit';
+import { mobileReducer } from './mobileSlice';
+import { cacheReducer } from './cacheSlice';
+import { locationReducer } from './locationSlice';
 
-export class RootStore {
-  coreStore: CoreStore<RootStore>;
+export const store = configureStore({
+  reducer: {
+    mobile: mobileReducer,
+    cache: cacheReducer,
+    location: locationReducer,
+  },
+});
 
-  constructor() {
-    this.coreStore = new CoreStore(this);
-  }
-}
+export type RootState = ReturnType<typeof store.getState>;
 
-const RootStoreContext = React.createContext(new RootStore());
-
-export const useRootStore = () => React.useContext(RootStoreContext);
+export type AppDispatch = typeof store.dispatch;

@@ -1,8 +1,8 @@
-import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Header } from '../widgets/Header';
 import { Weather } from '../widgets/Weather';
-import { useRootStore } from '../shared/stores';
+import { useAppDispatch } from '../shared/hooks';
+import { setIsMobile } from '../shared/stores/mobileSlice';
 
 function detectMob() {
   const toMatch = [
@@ -20,23 +20,23 @@ function detectMob() {
   });
 }
 
-export const App = observer(() => {
-  const { coreStore } = useRootStore();
+export const App = React.memo(() => {
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     if (detectMob()) {
-      coreStore.setIsMobile(true);
+      dispatch(setIsMobile(true));
     } else {
       window.onresize = (e) => {
         if ((e.currentTarget as Window).innerWidth <= 800) {
-          coreStore.setIsMobile(true);
+          dispatch(setIsMobile(true));
         } else {
-          coreStore.setIsMobile(false);
+          dispatch(setIsMobile(false));
         }
       };
 
       if (window.innerWidth <= 800) {
-        coreStore.setIsMobile(true);
+        dispatch(setIsMobile(true));
       }
     }
   }, []);
